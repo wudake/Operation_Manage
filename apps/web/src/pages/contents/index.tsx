@@ -51,7 +51,14 @@ export default function ContentCalendarPage() {
   const [filterStatus, setFilterStatus] = useState<string>()
   const [accountsList, setAccountsList] = useState<Account[]>([])
   const [usersList, setUsersList] = useState<User[]>([])
-  const [previewInfo, setPreviewInfo] = useState<{ url: string; isVertical: boolean } | null>(null)
+  type PreviewInfo =
+    | { type: 'social'; url: string; isVertical: boolean }
+    | { type: 'video'; url: string }
+    | { type: 'image'; url: string }
+    | { type: 'pdf'; url: string }
+    | { type: 'iframe'; url: string }
+
+  const [previewInfo, setPreviewInfo] = useState<PreviewInfo | null>(null)
   const [form] = Form.useForm()
   const screens = Grid.useBreakpoint()
   const isMobile = !screens.md
@@ -118,7 +125,7 @@ export default function ContentCalendarPage() {
     getUsers().then(setUsersList).catch(() => {})
   }, [])
 
-  const getEmbedInfo = (url: string): { url: string; isVertical: boolean } | null => {
+  const getPreviewInfo = (url: string): PreviewInfo | null => {
     try {
       if (!url) return null
       // YouTube Shorts (竖屏)
@@ -126,6 +133,7 @@ export default function ContentCalendarPage() {
       if (ytShortsMatch) {
         const origin = typeof window !== 'undefined' ? window.location.origin : ''
         return {
+          type: 'social',
           url: `https://www.youtube.com/embed/${ytShortsMatch[1]}?playsinline=1&rel=0${origin ? `&origin=${encodeURIComponent(origin)}` : ''}`,
           isVertical: true,
         }
@@ -135,6 +143,7 @@ export default function ContentCalendarPage() {
       if (ytWatchMatch) {
         const origin = typeof window !== 'undefined' ? window.location.origin : ''
         return {
+          type: 'social',
           url: `https://www.youtube.com/embed/${ytWatchMatch[1]}?playsinline=1&rel=0${origin ? `&origin=${encodeURIComponent(origin)}` : ''}`,
           isVertical: false,
         }
@@ -142,15 +151,41 @@ export default function ContentCalendarPage() {
       // Instagram Reels (竖屏)
       const igReelsMatch = url.match(/instagram\.com\/(?:reels?|p)\/([a-zA-Z0-9_-]+)/)
       if (igReelsMatch) return {
+        type: 'social',
         url: `https://www.instagram.com/p/${igReelsMatch[1]}/embed/?captioned=false`,
         isVertical: true,
       }
       // TikTok (竖屏)
       const ttMatch = url.match(/tiktok\.com\/.*\/video\/(\d+)/)
       if (ttMatch) return {
+        type: 'social',
         url: `https://www.tiktok.com/embed/v2/${ttMatch[1]}`,
         isVertical: true,
       }
+
+      // NAS / 局域网文件检测（根据扩展名）
+      const lowerUrl = url.toLowerCase()
+      let pathname = lowerUrl
+      try {
+        const parsed = new URL(url)
+        pathname = parsed.pathname.toLowerCase()
+      } catch {
+        // 非标准URL，直接用原始字符串匹配
+      }
+
+      if (/\.(mp4|mov|webm|mkv|avi|m4v|ogv)(\?.*)?$/.test(pathname)) {
+        return { type: 'video', url }
+      }
+      if (/\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?.*)?$/.test(pathname)) {
+        return { type: 'image', url }
+      }
+      if (/\.pdf(\?.*)?$/.test(pathname)) {
+        return { type: 'pdf', url }
+      }
+      if (/\.(html?|txt)(\?.*)?$/.test(pathname)) {
+        return { type: 'iframe', url }
+      }
+
       return null
     } catch {
       return null
@@ -159,7 +194,7 @@ export default function ContentCalendarPage() {
 
   const handlePreview = () => {
     const url = form.getFieldValue('publishUrl')
-    const info = getEmbedInfo(url)
+    const info = getPreviewInfo(url)
     if (info) {
       setPreviewInfo(info)
     } else {
@@ -651,17 +686,56 @@ export default function ContentCalendarPage() {
                 <Button onClick={handlePreview} size={isMobile ? 'small' : 'middle'}>预览</Button>
               </Space>
               {previewInfo && (
-                <div style={{ width: '100%', maxWidth: previewInfo.isVertical ? (isMobile ? 260 : 360) : (isMobile ? '100%' : 480) }}>
-                  <div style={{ position: 'relative', paddingTop: previewInfo.isVertical ? '177.78%' : '56.25%', borderRadius: 8, overflow: 'hidden', background: '#000' }}>
-                    <iframe
-                      src={previewInfo.url}
-                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      loading="eager"
-                    />
-                  </div>
+                <div style={{ width: '100%' }}>
+                  {previewInfo.type === 'social' && (
+                    <div style={{ width: '100%', maxWidth: previewInfo.isVertical ? (isMobile ? 260 : 360) : (isMobile ? '100%' : 480) }}>
+                      <div style={{ position: 'relative', paddingTop: previewInfo.isVertical ? '177.78%' : '56.25%', borderRadius: 8, overflow: 'hidden', background: '#000' }}>
+                        <iframe
+                          src={previewInfo.url}
+                          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                          referrerPolicy="strict-origin-when-cross-origin"
+                          loading="eager"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {previewInfo.type === 'video' && (
+                    <div style={{ borderRadius: 8, overflow: 'hidden', background: '#000' }}>
+                      <video
+                        src={previewInfo.url}
+                        controls
+                        style={{ width: '100%', maxHeight: isMobile ? 360 : 480, display: 'block' }}
+                        preload="metadata"
+                      />
+                    </div>
+                  )}
+                  {previewInfo.type === 'image' && (
+                    <div style={{ borderRadius: 8, overflow: 'hidden', background: '#f5f5f5', textAlign: 'center' }}>
+                      <img
+                        src={previewInfo.url}
+                        alt="预览"
+                        style={{ maxWidth: '100%', maxHeight: isMobile ? 360 : 480, display: 'block', margin: '0 auto' }}
+                      />
+                    </div>
+                  )}
+                  {previewInfo.type === 'pdf' && (
+                    <div style={{ position: 'relative', paddingTop: '75%', borderRadius: 8, overflow: 'hidden', background: '#f5f5f5' }}>
+                      <iframe
+                        src={previewInfo.url}
+                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                      />
+                    </div>
+                  )}
+                  {previewInfo.type === 'iframe' && (
+                    <div style={{ position: 'relative', paddingTop: '75%', borderRadius: 8, overflow: 'hidden', background: '#f5f5f5' }}>
+                      <iframe
+                        src={previewInfo.url}
+                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                      />
+                    </div>
+                  )}
                   <div style={{ marginTop: 4, textAlign: 'right' }}>
                     <Button type="link" size="small" onClick={() => window.open(form.getFieldValue('publishUrl'), '_blank')}>
                       新窗口打开原链接 ↗
