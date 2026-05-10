@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict vXHYWdZ9IlEMHyD9eZ01h5Hgh15bx7PSHEcmLPQPNwIS8xPWgECDa7f6bfYSFC8
+\restrict TUDqNWile3agVWjkOefXEZwO2OXz2RpwjbsGsC93WGPpsLfQmE6S4jCh4zoptax
 
 -- Dumped from database version 16.13
 -- Dumped by pg_dump version 16.13
@@ -18,6 +18,70 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+ALTER TABLE IF EXISTS ONLY public.topics DROP CONSTRAINT IF EXISTS topics_created_by_fkey;
+ALTER TABLE IF EXISTS ONLY public.notifications DROP CONSTRAINT IF EXISTS notifications_user_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.materials DROP CONSTRAINT IF EXISTS materials_created_by_fkey;
+ALTER TABLE IF EXISTS ONLY public.leads DROP CONSTRAINT IF EXISTS leads_source_content_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.leads DROP CONSTRAINT IF EXISTS leads_source_account_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.leads DROP CONSTRAINT IF EXISTS leads_operator_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.contents DROP CONSTRAINT IF EXISTS contents_topic_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.contents DROP CONSTRAINT IF EXISTS contents_operator_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.content_data DROP CONSTRAINT IF EXISTS content_data_content_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.content_data DROP CONSTRAINT IF EXISTS content_data_account_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.content_comments DROP CONSTRAINT IF EXISTS content_comments_user_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.content_comments DROP CONSTRAINT IF EXISTS content_comments_content_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.accounts DROP CONSTRAINT IF EXISTS accounts_group_id_fkey;
+ALTER TABLE IF EXISTS ONLY public."_AccountToUser" DROP CONSTRAINT IF EXISTS "_AccountToUser_B_fkey";
+ALTER TABLE IF EXISTS ONLY public."_AccountToUser" DROP CONSTRAINT IF EXISTS "_AccountToUser_A_fkey";
+ALTER TABLE IF EXISTS ONLY public."_AccountToContent" DROP CONSTRAINT IF EXISTS "_AccountToContent_B_fkey";
+ALTER TABLE IF EXISTS ONLY public."_AccountToContent" DROP CONSTRAINT IF EXISTS "_AccountToContent_A_fkey";
+DROP INDEX IF EXISTS public.users_username_key;
+DROP INDEX IF EXISTS public.dictionaries_category_code_key;
+DROP INDEX IF EXISTS public.content_data_content_id_account_id_record_date_key;
+DROP INDEX IF EXISTS public."_AccountToUser_B_index";
+DROP INDEX IF EXISTS public."_AccountToContent_B_index";
+ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_pkey;
+ALTER TABLE IF EXISTS ONLY public.topics DROP CONSTRAINT IF EXISTS topics_pkey;
+ALTER TABLE IF EXISTS ONLY public.operation_logs DROP CONSTRAINT IF EXISTS operation_logs_pkey;
+ALTER TABLE IF EXISTS ONLY public.notifications DROP CONSTRAINT IF EXISTS notifications_pkey;
+ALTER TABLE IF EXISTS ONLY public.materials DROP CONSTRAINT IF EXISTS materials_pkey;
+ALTER TABLE IF EXISTS ONLY public.leads DROP CONSTRAINT IF EXISTS leads_pkey;
+ALTER TABLE IF EXISTS ONLY public.dictionaries DROP CONSTRAINT IF EXISTS dictionaries_pkey;
+ALTER TABLE IF EXISTS ONLY public.contents DROP CONSTRAINT IF EXISTS contents_pkey;
+ALTER TABLE IF EXISTS ONLY public.content_data DROP CONSTRAINT IF EXISTS content_data_pkey;
+ALTER TABLE IF EXISTS ONLY public.content_comments DROP CONSTRAINT IF EXISTS content_comments_pkey;
+ALTER TABLE IF EXISTS ONLY public.accounts DROP CONSTRAINT IF EXISTS accounts_pkey;
+ALTER TABLE IF EXISTS ONLY public.account_groups DROP CONSTRAINT IF EXISTS account_groups_pkey;
+ALTER TABLE IF EXISTS ONLY public._prisma_migrations DROP CONSTRAINT IF EXISTS _prisma_migrations_pkey;
+ALTER TABLE IF EXISTS ONLY public."_AccountToUser" DROP CONSTRAINT IF EXISTS "_AccountToUser_AB_pkey";
+ALTER TABLE IF EXISTS ONLY public."_AccountToContent" DROP CONSTRAINT IF EXISTS "_AccountToContent_AB_pkey";
+DROP TABLE IF EXISTS public.users;
+DROP TABLE IF EXISTS public.topics;
+DROP TABLE IF EXISTS public.operation_logs;
+DROP TABLE IF EXISTS public.notifications;
+DROP TABLE IF EXISTS public.materials;
+DROP TABLE IF EXISTS public.leads;
+DROP TABLE IF EXISTS public.dictionaries;
+DROP TABLE IF EXISTS public.contents;
+DROP TABLE IF EXISTS public.content_data;
+DROP TABLE IF EXISTS public.content_comments;
+DROP TABLE IF EXISTS public.accounts;
+DROP TABLE IF EXISTS public.account_groups;
+DROP TABLE IF EXISTS public._prisma_migrations;
+DROP TABLE IF EXISTS public."_AccountToUser";
+DROP TABLE IF EXISTS public."_AccountToContent";
+DROP TYPE IF EXISTS public."UserStatus";
+DROP TYPE IF EXISTS public."UserRole";
+DROP TYPE IF EXISTS public."TopicStatus";
+DROP TYPE IF EXISTS public."Platform";
+DROP TYPE IF EXISTS public."NotificationType";
+DROP TYPE IF EXISTS public."MaterialCategory";
+DROP TYPE IF EXISTS public."LeadStatus";
+DROP TYPE IF EXISTS public."EffectLevel";
+DROP TYPE IF EXISTS public."Difficulty";
+DROP TYPE IF EXISTS public."ContentStatus";
+DROP TYPE IF EXISTS public."ContentForm";
+DROP TYPE IF EXISTS public."AccountStatus";
 --
 -- Name: AccountStatus; Type: TYPE; Schema: public; Owner: smm
 --
@@ -542,6 +606,7 @@ ec3b93f1-5ca9-49b4-8e2b-e6b7403d121f	413ec705-2b35-48d6-8c58-35b2cef35f69
 4201e725-b491-47f1-b49e-0930aa6530cd	7d3a9849-f043-48e9-8555-e174f4a02f97
 ed0c6902-fcfc-4162-b45b-401667d7b95a	93a01f43-8443-4caa-8aed-3ab227260ea6
 d5cb501d-673d-4fd3-8887-e6b41abe8f9e	04e0f45a-6f8c-468d-b731-031293594823
+8e069317-9f59-42ad-9487-7c69aa85224a	1bd30001-b252-4530-8c0d-bf43cc53971e
 \.
 
 
@@ -563,15 +628,17 @@ d5ebd5a3-4e8c-47d0-acfc-ef9ece241473	e6cc3a1d-6c69-4077-93a0-4ac003de1060
 0affcbeb-6ab5-4d86-a2ac-5e96dc3fa98f	e6cc3a1d-6c69-4077-93a0-4ac003de1060
 37475525-9e6b-42cc-8dc8-3de96db08b6f	8fda33c9-5ef6-473b-8419-d9cd5db3ffe8
 37475525-9e6b-42cc-8dc8-3de96db08b6f	e6cc3a1d-6c69-4077-93a0-4ac003de1060
-8e069317-9f59-42ad-9487-7c69aa85224a	8fda33c9-5ef6-473b-8419-d9cd5db3ffe8
 af19136f-b4b1-4d14-882b-45d173270cd1	8fda33c9-5ef6-473b-8419-d9cd5db3ffe8
 61d941b9-9f04-40df-aadd-361fcebad34d	8fda33c9-5ef6-473b-8419-d9cd5db3ffe8
 96a4ff80-b849-4157-97b2-5011ef50c461	e6cc3a1d-6c69-4077-93a0-4ac003de1060
 2ca6a531-7264-4d3c-8509-3b614cc117a4	e6cc3a1d-6c69-4077-93a0-4ac003de1060
 8659a69f-9730-49c9-a966-0bd79da063a8	8fda33c9-5ef6-473b-8419-d9cd5db3ffe8
-e1fff405-11da-458f-8269-45af816e8637	8fda33c9-5ef6-473b-8419-d9cd5db3ffe8
 90d6b3b7-941a-4449-937a-5eeb4a7b43c4	8fda33c9-5ef6-473b-8419-d9cd5db3ffe8
 b16620f7-2db8-4795-adf7-a38be56e7aae	8fda33c9-5ef6-473b-8419-d9cd5db3ffe8
+d5cb501d-673d-4fd3-8887-e6b41abe8f9e	8fda33c9-5ef6-473b-8419-d9cd5db3ffe8
+e1fff405-11da-458f-8269-45af816e8637	8fda33c9-5ef6-473b-8419-d9cd5db3ffe8
+4201e725-b491-47f1-b49e-0930aa6530cd	e6cc3a1d-6c69-4077-93a0-4ac003de1060
+8e069317-9f59-42ad-9487-7c69aa85224a	8fda33c9-5ef6-473b-8419-d9cd5db3ffe8
 \.
 
 
@@ -608,8 +675,6 @@ COPY public.account_groups (id, name, description, created_at, updated_at) FROM 
 --
 
 COPY public.accounts (id, platform, name, account_id, home_url, market, target_audience, status, persona, contact_info, group_id, tags, created_at, updated_at, account_type, common_devices, linked_phone, login_email, login_password, login_phone, registered_at, remark, follower_count, custom_group) FROM stdin;
-d5cb501d-673d-4fd3-8887-e6b41abe8f9e	INSTAGRAM	boswindordoorswindowsfactory	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.436	2026-04-29 09:51:38.436	\N	\N	\N	boswindor02@outlook.com	Boswindor123$%	\N	\N	绑定了购买账号广告主页（邮箱登录）	0	\N
-4201e725-b491-47f1-b49e-0930aa6530cd	YOUTUBE	boswindor.lulu	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.441	2026-04-29 09:51:38.441	\N	\N	\N	info@boswindor.com	Bos123$%	17329524698	\N	\N	37	\N
 ed0c6902-fcfc-4162-b45b-401667d7b95a	TIKTOK	boswindor1	\N	\N	\N	\N	BANNED	\N	\N	\N	\N	2026-04-29 09:51:38.448	2026-04-29 09:51:38.448	\N	\N	\N	boswindor@gmail.com	Bos123456%	\N	\N	\N	0	\N
 af19136f-b4b1-4d14-882b-45d173270cd1	TIKTOK	Boswindor Building Material	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.337	2026-04-30 06:47:16.44	混剪账号02	\N	\N	bhe05798@gmail.com	Boswindor250331+	18126652290	\N	\N	259	Danny 2
 ec3b93f1-5ca9-49b4-8e2b-e6b7403d121f	FACEBOOK	boswindor Lulu	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.445	2026-04-30 06:27:02.638	\N	\N	\N	shuanglianguo311@gmail.com	gsl123456789	18681475702	\N	手机号：刘总手机号	8	
@@ -625,10 +690,12 @@ d5ebd5a3-4e8c-47d0-acfc-ef9ece241473	YOUTUBE	boswindor_factory	\N	\N	\N	\N	ACTIV
 60a9d67a-e653-4c78-a4a3-492f13f43916	INSTAGRAM	boswindor_limited	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.312	2026-04-30 06:33:51.644	主账户	\N	\N	boswindor@gmail.com	Boswindor888888	\N	\N	\N	570	Danny Benny
 0affcbeb-6ab5-4d86-a2ac-5e96dc3fa98f	TIKTOK	china_window_door	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.329	2026-04-30 06:34:01.87	主账户	\N	\N	zzhu96663@gmail.com	Bos123456	17329524698	\N	\N	1258	Danny Benny
 37475525-9e6b-42cc-8dc8-3de96db08b6f	YOUTUBE	Foshan Boswindor Window and Door Limited	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.322	2026-04-30 06:34:11.17	主账户	\N	\N	boswindor@gmail.com	Boswindor123$%	\N	\N	\N	74	Danny Benny
-8e069317-9f59-42ad-9487-7c69aa85224a	INSTAGRAM	Boswindor Building Material	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.353	2026-04-30 06:34:55.172	混剪账号02	\N	\N	zzhu96663@gmail.com	Bos123456	17329524698	\N	ins账号都要用用户名登录	26	Danny 2
-e1fff405-11da-458f-8269-45af816e8637	INSTAGRAM	Boswindor PremiumDoors	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.408	2026-04-30 06:49:26.63	副账号	\N	\N	boswindor06@gmail.com	Boswindor06$.	18126652290	\N	\N	0	Danny 1
 90d6b3b7-941a-4449-937a-5eeb4a7b43c4	YOUTUBE	Boswindor PremiumDoors	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.414	2026-04-30 06:49:31.364	副账号	\N	\N	boswindor06@gmail.com	Boswindor06$.	18126652290	\N	\N	7	Danny 1
 b16620f7-2db8-4795-adf7-a38be56e7aae	TIKTOK	Boswindor-Premium-Doors	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.429	2026-04-30 06:49:40.867	副账号	\N	\N	boswindor06@gmail.com	Boswindor06$.	18126652290	\N	谷歌登录	0	Danny 1
+d5cb501d-673d-4fd3-8887-e6b41abe8f9e	INSTAGRAM	boswindordoorswindowsfactory	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.436	2026-05-09 01:16:02.024	\N	\N	\N	boswindor02@outlook.com	Boswindor123$%	\N	\N	绑定了购买账号广告主页（邮箱登录）	0	\N
+e1fff405-11da-458f-8269-45af816e8637	INSTAGRAM	Boswindor PremiumDoors	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.408	2026-05-09 01:22:20.99	副账号	\N	\N	boswindor06@gmail.com	Aa123456$.	18126652290	\N	\N	0	Danny 1
+4201e725-b491-47f1-b49e-0930aa6530cd	YOUTUBE	boswindor.lulu	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.441	2026-05-09 01:35:31.531	\N	\N	\N	info@boswindor.com	Bos123$%	17329524698	\N	\N	37	\N
+8e069317-9f59-42ad-9487-7c69aa85224a	INSTAGRAM	boswindor_windows_doors	\N	\N	\N	\N	ACTIVE	\N	\N	\N	\N	2026-04-29 09:51:38.353	2026-05-09 01:40:09.889	混剪账号02	\N	\N	zzhu96663@gmail.com	Aa123456.	17329524698	\N	ins账号都要用用户名登录	26	Danny 2
 \.
 
 
@@ -686,6 +753,7 @@ b965c06b-19e0-4eef-9fc8-f5d4ea108937	海外客户考察记录-05-01-3	\N	22f85b9
 7d3a9849-f043-48e9-8555-e174f4a02f97	阳光房设计案例分享-05-01-5	\N	22f85b94-9b07-42b6-8e2c-2d5df13694ee	PENDING	2026-05-01 11:09:00	\N	\N	测试数据：2026-05-01 发布的内容	\N	\N	\N	\N	2026-04-30 14:50:45.969	2026-04-30 14:50:45.969	repost	\N
 93a01f43-8443-4caa-8aed-3ab227260ea6	断桥铝vs普通铝合金对比-05-02-1	\N	e6cc3a1d-6c69-4077-93a0-4ac003de1060	PENDING	2026-05-02 11:14:00	\N	\N	测试数据：2026-05-02 发布的内容	\N	\N	\N	\N	2026-04-30 14:50:45.986	2026-04-30 14:50:45.986	original	\N
 04e0f45a-6f8c-468d-b731-031293594823	门窗行业趋势分析-05-02-2	\N	22f85b94-9b07-42b6-8e2c-2d5df13694ee	PENDING	2026-05-02 18:11:00	\N	\N	测试数据：2026-05-02 发布的内容	\N	\N	\N	\N	2026-04-30 14:50:46.004	2026-04-30 14:50:46.004	original	\N
+1bd30001-b252-4530-8c0d-bf43cc53971e	A center opening sliding door system designed for wider and more balanced access.	\N	8fda33c9-5ef6-473b-8419-d9cd5db3ffe8	PENDING	2026-05-08 07:00:00	\N	https://www.instagram.com/reel/DYEzYCxDNp3/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==	A center opening sliding door system designed for wider and more balanced access.\n✔ Two panels sliding from the center\n✔ Symmetrical and clean appearance\n✔ Wider opening compared to single sliding\nSuitable for villa entrances, balconies, and large openings.\nWorking on a project?\nSend your drawings or request layout suggestions.\n#CenterOpening #AluminumDoor#Architect #Designer #Builder#MinimalDesign #ModernHome #Facade#VillaDesign #LuxuryHome #Design	\N	\N	\N		2026-05-09 01:50:15.786	2026-05-09 02:21:54.88	mixed	
 \.
 
 
@@ -810,6 +878,7 @@ b2cf4797-d5a4-4783-9296-11744aca4abd	What is the difference between Low-E glass 
 6e410ba9-3128-44a6-bbdf-1ba734ad844e	Where can I find commercial aluminum window manufacturers?	SHORT_VIDEO	{aluminum_window,commercial}	\N	buying_guide	\N	PENDING	0	\N	22f85b94-9b07-42b6-8e2c-2d5df13694ee	2026-04-29 09:03:25.242	2026-04-29 09:03:25.242	\N	f	\N	\N	\N	\N
 fd67e858-12f6-4d3e-ac01-a14399f3b74d	How can contractors source custom windows for building projects?	SHORT_VIDEO	{custom}	\N	comparison	\N	PENDING	0	\N	22f85b94-9b07-42b6-8e2c-2d5df13694ee	2026-04-29 09:03:25.249	2026-04-29 09:03:25.249	\N	f	\N	\N	\N	\N
 9539df2b-e531-44a7-86e1-38d3d81bfe6b	Modern aluminum window designs	SHORT_VIDEO	{aluminum_window,custom}	\N	工厂实拍	\N	PENDING	0	wegweg	22f85b94-9b07-42b6-8e2c-2d5df13694ee	2026-04-29 09:03:25.254	2026-04-30 06:16:26.512	2026-04-30 00:00:00	t	8fda33c9-5ef6-473b-8419-d9cd5db3ffe8	d5cb501d-673d-4fd3-8887-e6b41abe8f9e	wegweg	wegweg
+c66c0572-4749-461f-9713-32c9c48a9657	Why are more and more builders & contractors sourcing doors and windows from China? 	SHORT_VIDEO	\N	\N	采购指南	\N	PENDING	0	\N	22f85b94-9b07-42b6-8e2c-2d5df13694ee	2026-05-09 07:45:21.988	2026-05-09 07:49:49.139	2026-05-09 00:00:00	f	8fda33c9-5ef6-473b-8419-d9cd5db3ffe8		\N	Still struggling with high cost budgets?\nTired of long delivery times and window and door products that don't meet your standards?\nAt our Boswindor factory in Foshan, China, we offer architectural-grade aluminum alloy windows and doors.\nFrom superior performance to sleek, minimalist designs,\nwe help you achieve high-end quality at a more affordable price.\nYou'll get certified quality, including CSA CENFRC and AS2047 standards,\nwhile truly saving costs.\nThat's why more and more professionals are choosing to source directly.\nReady to upgrade your next project?\nMessage us or click the link in our profile to get our product catalog now.
 \.
 
 
@@ -1119,5 +1188,5 @@ ALTER TABLE ONLY public.topics
 -- PostgreSQL database dump complete
 --
 
-\unrestrict vXHYWdZ9IlEMHyD9eZ01h5Hgh15bx7PSHEcmLPQPNwIS8xPWgECDa7f6bfYSFC8
+\unrestrict TUDqNWile3agVWjkOefXEZwO2OXz2RpwjbsGsC93WGPpsLfQmE6S4jCh4zoptax
 
